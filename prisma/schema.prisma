@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  PROCUREMENT_MANAGER
+  INSPECTION_MANAGER
+  CLIENT
+}
+
+enum OrderStatus {
+  PENDING
+  CHECKLIST_CREATED
+  IN_PROGRESS
+  INSPECTION_COMPLETED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  phone     String?  @unique
+  password  String
+  role      Role
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  createdById  String?
+  creator      User?   @relation("UserCreator", fields: [createdById], references: [id])
+  createdUsers User[]  @relation("UserCreator")
+
+  // For PM/IM relationship
+  assignedPMId String?
+  assignedPM   User?   @relation("PMToIM", fields: [assignedPMId], references: [id])
+  assignedIMs  User[]  @relation("PMToIM")
+
+  managedOrders   Order[]               @relation("OrderPM")
+  clientOrders    Order[]               @relation("OrderClient")
+  submissions     ChecklistSubmission[]
+  clientTemplates ChecklistTemplate[]   @relation("ClientTemplate")
+}
+
+enum Source {
+  DEFAULT
+  CLIENT
+  PREVIOUS_ORDER
+}
+
+model ChecklistTemplate {
+  id          String  @id @default(uuid())
+  name        String
+  schema      Json // List of questions with types, options, etc.
+  clientId    String?
+  createdById String
+
+  source           Source  @default(DEFAULT)
+  version          Int     @default(1)
+  isActive         Boolean @default(true)
+  parentTemplateId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Client               User?                 @relation("ClientTemplate", fields: [clientId], references: [id])
+  Orders               Order[]
+  ChecklistSubmissions ChecklistSubmission[]
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  title       String      @default("New Order For Delivery")
+  orderNumber String      @unique @default(cuid())
+  status      OrderStatus @default(PENDING)
+
+  clientId String
+  client   User   @relation("OrderClient", fields: [clientId], references: [id])
+
+  pmId String
+  pm   User   @relation("OrderPM", fields: [pmId], references: [id])
+
+  submissions ChecklistSubmission[]
+
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  checklistTemplate   ChecklistTemplate? @relation(fields: [checklistTemplateId], references: [id])
+  checklistTemplateId String?
+  checklistSnapshot   Json?
+  checklistSource     Source             @default(DEFAULT)
+}
+
+model ChecklistSubmission {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  templateId String?
+  template   ChecklistTemplate? @relation(fields: [templateId], references: [id])
+
+  imId String
+  im   User   @relation(fields: [imId], references: [id])
+
+  answers Json // Question-Answer pairs + image URLs
+  isFinal Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

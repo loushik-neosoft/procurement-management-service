@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    /* Language & Environment */
+    "target": "ES2020",
+    "lib": [
+      "ES2020"
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@middlewares/*": [
+        "middlewares/*"
+      ]
+    },
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    /* Output */
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    /* Type Safety */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    /* Interop & Imports */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    /* Performance */
+    "skipLibCheck": true,
+    "incremental": true,
+    /* Decorators (optional – Prisma not needed) */
+    "experimentalDecorators": false,
+    /* Types */
+    "types": [
+      "node",
+      "express"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests"
+  ]
+}
