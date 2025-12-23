@@ -6,6 +6,7 @@ import { swaggerSpec } from '@config/swagger';
 import setUpRoutes from './routes';
 import { errorHandler } from '@middlewares/errorHandler';
 import { requestLogger } from '@middlewares/logger';
+import { notFound } from '@middlewares/notFound';
 
 const app = express();
 
@@ -24,7 +25,11 @@ app.use(
 // Routes
 setUpRoutes(app);
 
+// Not Found Middleware
+app.use(notFound);
+
 // Error Handling Middleware
 app.use(errorHandler);
+
 
 export default app;
