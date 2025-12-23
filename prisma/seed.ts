@@ -2,7 +2,6 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { config } from 'dotenv';
-import { Pool } from 'pg';
 
 config();
 config({ path: '.env.local' });
@@ -11,7 +10,7 @@ console.log(process.env.DATABASE_URL);
 
 const prisma = new PrismaClient({
     log: ['query', 'info', 'warn', 'error'],
-    adapter: new PrismaPg(new Pool({ connectionString: process.env.DATABASE_URL }))
+    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
 });
 
 async function main() {
