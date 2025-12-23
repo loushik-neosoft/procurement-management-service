@@ -1,7 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { AuthRequest } from '@middlewares/auth';
 import { OrderService } from './order.service';
-import { Role } from '@prisma/client';
+import { Role, Prisma } from '@prisma/client';
 
 export class OrderController {
     static async create(req: AuthRequest, res: Response, next: NextFunction) {
@@ -16,14 +16,11 @@ export class OrderController {
 
     static async list(req: AuthRequest, res: Response, next: NextFunction) {
         try {
-            const filters: any = {};
+            const filters: Prisma.OrderWhereInput = {};
             if (req.user!.role === Role.CLIENT) {
                 filters.clientId = req.user!.userId;
             } else if (req.user!.role === Role.INSPECTION_MANAGER) {
-                const user = await prisma.user.findUnique({ where: { id: req.user!.userId } });
-                if (user?.assignedPMId) {
-                    filters.pmId = user.assignedPMId;
-                }
+                filters.imId = req.user!.userId;
             } else if (req.user!.role === Role.PROCUREMENT_MANAGER) {
                 filters.pmId = req.user!.userId;
             }
@@ -54,5 +51,3 @@ export class OrderController {
         }
     }
 }
-
-import prisma from '@config/database';

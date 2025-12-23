@@ -1,13 +1,14 @@
 import prisma from '@config/database';
 import { ChecklistSubmission, OrderStatus } from '@prisma/client';
+import { SubmitChecklistDto } from './submission.schema';
+import { Question } from '../checklists/checklist.schema';
 
 export class SubmissionService {
-    static async submitChecklist(data: any, imId: string): Promise<ChecklistSubmission> {
+    static async submitChecklist(data: SubmitChecklistDto, imId: string): Promise<ChecklistSubmission> {
         const order = await prisma.order.findUnique({
             where: { id: data.orderId },
             include: {
                 submissions: { where: { isFinal: true } },
-                pm: { include: { assignedIMs: true } }
             }
         });
 
@@ -18,7 +19,7 @@ export class SubmissionService {
 
         // Check if IM is assigned to the PM of the order
         // Let's check if the IM is in the assignedIMs of the PM
-        const isAssigned = order.pm.assignedIMs.some(im => im.id === imId);
+        const isAssigned = order.imId === imId;
         if (!isAssigned) {
             throw new Error('You are not authorized to submit for this order');
         }
@@ -28,7 +29,7 @@ export class SubmissionService {
         }
 
         // Validate answers against snapshot
-        const snapshot = order.checklistSnapshot as any[];
+        const snapshot = order.checklistSnapshot as unknown as Question[];
         if (!snapshot) throw new Error('Order does not have a checklist snapshot');
 
         this.validateAnswers(snapshot, data.answers);
@@ -59,7 +60,7 @@ export class SubmissionService {
         return submission;
     }
 
-    private static validateAnswers(snapshot: any[], answers: any) {
+    private static validateAnswers(snapshot: Question[], answers: Record<string, any>) {
         for (const question of snapshot) {
             const answer = answers[question.key];
 
@@ -67,20 +68,18 @@ export class SubmissionService {
                 throw new Error(`Question "${question.label}" is required`);
             }
 
-            console.log({ answer });
-
             if (answer !== undefined && answer !== null) {
                 switch (question.type) {
                     case 'BOOLEAN':
                         if (typeof answer !== 'boolean') throw new Error(`Invalid type for ${question.key}: expected boolean`);
                         break;
                     case 'DROPDOWN':
-                        if (!question.options.includes(answer)) throw new Error(`Invalid option for ${question.key}`);
+                        if (!question.options?.includes(answer)) throw new Error(`Invalid option for ${question.key}`);
                         break;
                     case 'MULTI_SELECT':
                         if (!Array.isArray(answer)) throw new Error(`Invalid type for ${question.key}: expected array`);
-                        answer.forEach((val: any) => {
-                            if (!question.options.includes(val)) throw new Error(`Invalid option ${val} for ${question.key}`);
+                        answer.forEach((val: string) => {
+                            if (!question.options?.includes(val)) throw new Error(`Invalid option ${val} for ${question.key}`);
                         });
                         break;
                     case 'TEXT':

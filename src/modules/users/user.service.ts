@@ -1,6 +1,6 @@
 import prisma from '@config/database';
 import bcrypt from 'bcrypt';
-import { User, Role } from '@prisma/client';
+import { User, Role, Prisma } from '@prisma/client';
 import { AppError } from '@middlewares/errorHandler';
 import { CreateUserSchema } from './user.schema';
 
@@ -59,7 +59,7 @@ export class UserService {
     }
 
     static async getUsers(requestingUser: { userId: string, role: Role }, roleType?: Role): Promise<User[]> {
-        let where: any = {};
+        let where: Prisma.UserWhereInput = {};
 
 
 

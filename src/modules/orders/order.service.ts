@@ -1,10 +1,11 @@
 import prisma from '@config/database';
-import { Order, OrderStatus, Source } from '@prisma/client';
+import { Order, OrderStatus, Source, Prisma } from '@prisma/client';
 import { ChecklistService } from '../checklists/checklist.service';
+import { CreateOrderDto } from './order.schema';
 
 export class OrderService {
-    static async createOrder(data: any, pmId: string): Promise<Order> {
-        let snapshot: any = null;
+    static async createOrder(data: CreateOrderDto, pmId: string): Promise<Order> {
+        let snapshot: Prisma.JsonValue = null;
         let source: Source = Source.DEFAULT;
 
         if (data.previousOrderId) {
@@ -29,20 +30,22 @@ export class OrderService {
                 clientId: data.clientId,
                 pmId: pmId,
                 checklistTemplateId: data.checklistTemplateId || null,
-                checklistSnapshot: snapshot,
+                checklistSnapshot: snapshot as Prisma.InputJsonValue,
                 checklistSource: source,
                 status: OrderStatus.PENDING,
+                imId: data?.inspectionManagerId,
             },
         });
     }
 
-    static async getOrders(filters: any): Promise<Partial<Order>[]> {
+    static async getOrders(filters: Prisma.OrderWhereInput): Promise<Partial<Order>[]> {
         const orders = await prisma.order.findMany({
             where: filters,
             include: {
                 client: { select: { name: true, email: true } },
                 pm: { select: { name: true, email: true } },
                 checklistTemplate: { select: { name: true } },
+                im: { select: { name: true, email: true } },
             },
         });
 

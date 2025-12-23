@@ -1,6 +1,6 @@
 import prisma from '@config/database';
-import { ChecklistTemplate, Source } from '@prisma/client';
-import { CreateChecklistTemplateType } from './checklist.schema';
+import { ChecklistTemplate, Source, Prisma } from '@prisma/client';
+import { CreateChecklistTemplateType, UpdateChecklistTemplateType } from './checklist.schema';
 
 export class ChecklistService {
     static async createTemplate(data: CreateChecklistTemplateType, createdById: string): Promise<ChecklistTemplate> {
@@ -58,7 +58,7 @@ export class ChecklistService {
         return prisma.checklistTemplate.findUnique({ where: { id } });
     }
 
-    static async updateTemplate(id: string, data: any): Promise<ChecklistTemplate> {
+    static async updateTemplate(id: string, data: UpdateChecklistTemplateType): Promise<ChecklistTemplate> {
         const current = await this.getTemplateById(id);
         if (!current) throw new Error('Template not found');
 
@@ -72,9 +72,9 @@ export class ChecklistService {
         return prisma.checklistTemplate.create({
             data: {
                 name: data.name || current.name,
-                schema: data.questions || current.schema,
+                schema: (data.questions || current.schema) as Prisma.InputJsonValue,
                 clientId: data.clientId || current.clientId,
-                createdById: data.createdById || current.createdById,
+                createdById: current.createdById,
                 source: data.source || current.source,
                 version: current.version + 1,
                 parentTemplateId: current.parentTemplateId || current.id,

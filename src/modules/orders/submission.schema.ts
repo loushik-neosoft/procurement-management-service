@@ -8,3 +8,5 @@ export const submitChecklistSchema = z.object({
     answers: checklistAnswerSchema,
     isFinal: z.boolean().default(false),
 });
+
+export type SubmitChecklistDto = z.infer<typeof submitChecklistSchema>;

@@ -8,7 +8,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
     const oldSend = res.send;
     res.send = function (data) {
         res.locals.responseBody = data;
-        return oldSend.apply(res, arguments as any);
+        return oldSend.call(res, data);
     };
 
     res.on('finish', () => {

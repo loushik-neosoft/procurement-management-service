@@ -6,6 +6,7 @@ export const createOrderSchema = z.object({
     clientId: z.uuid(),
     checklistTemplateId: z.uuid().optional(),
     previousOrderId: z.uuid().optional(),
+    inspectionManagerId: z.uuid(),
 }).refine(data => data.checklistTemplateId || data.previousOrderId, {
     message: "Either checklistTemplateId or previousOrderId must be provided",
     path: ["checklistTemplateId"],
@@ -14,3 +15,5 @@ export const createOrderSchema = z.object({
 export const updateOrderStatusSchema = z.object({
     status: z.enum(OrderStatus),
 });
+
+export type CreateOrderDto = z.infer<typeof createOrderSchema>;

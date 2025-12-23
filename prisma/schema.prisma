@@ -42,10 +42,11 @@ model User {
   assignedPM   User?   @relation("PMToIM", fields: [assignedPMId], references: [id])
   assignedIMs  User[]  @relation("PMToIM")
 
-  managedOrders   Order[]               @relation("OrderPM")
-  clientOrders    Order[]               @relation("OrderClient")
-  submissions     ChecklistSubmission[]
-  clientTemplates ChecklistTemplate[]   @relation("ClientTemplate")
+  managedOrders    Order[]               @relation("OrderPM")
+  clientOrders     Order[]               @relation("OrderClient")
+  submissions      ChecklistSubmission[]
+  clientTemplates  ChecklistTemplate[]   @relation("ClientTemplate")
+  inspectionOrders Order[]               @relation("OrderIM")
 }
 
 enum Source {
@@ -85,6 +86,9 @@ model Order {
 
   pmId String
   pm   User   @relation("OrderPM", fields: [pmId], references: [id])
+
+  imId String
+  im   User   @relation("OrderIM", fields: [imId], references: [id])
 
   submissions ChecklistSubmission[]
 
