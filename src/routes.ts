@@ -18,8 +18,7 @@ const setUpRoutes = (app: Express) => {
 
         if (routeFile) {
             const routes = require(path.join(modulePath, routeFile))
-            const routeName = module.replace(/-./g, x => x[1].toUpperCase()); // camelCase for consistency
-            app.use(`${baseRoute}/${module}`, routes.default || routes)
+            app.use(`${baseRoute}/${module}`, routes.default)
             console.log(`route configured: ${baseRoute}/${module}`)
         }
     })

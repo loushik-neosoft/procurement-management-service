@@ -16,9 +16,6 @@ export class ChecklistController {
 
     static async getAllTemplates(req: Request, res: Response, next: NextFunction) {
         try {
-
-            console.log(req.query);
-
             const { clientId } = req.query;
             const templates = await ChecklistService.getAllTemplates(clientId as string);
             res.status(200).json({ status: 'success', data: { templates } });
