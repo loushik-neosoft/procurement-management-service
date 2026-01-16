@@ -28,7 +28,7 @@ export class ChecklistController {
 
     static async getTemplate(req: Request, res: Response, next: NextFunction) {
         try {
-            const template = await ChecklistService.getTemplateById(req.params.id);
+            const template = await ChecklistService.getTemplateById(req.params.id as string);
             res.status(200).json({ status: 'success', data: { template } });
         } catch (error) {
             next(error);
@@ -39,7 +39,7 @@ export class ChecklistController {
         try {
             const data = req.body;
             data.createdById = req.user?.userId;
-            const template = await ChecklistService.updateTemplate(req.params.id, data);
+            const template = await ChecklistService.updateTemplate(req.params.id as string, data);
             res.status(200).json({ status: 'success', data: { template } });
         } catch (error) {
             next(error);

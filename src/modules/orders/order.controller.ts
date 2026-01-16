@@ -35,7 +35,7 @@ export class OrderController {
     static async updateStatus(req: AuthRequest, res: Response, next: NextFunction) {
         try {
             const { status } = req.body;
-            const order = await OrderService.updateStatus(req.params.id, status);
+            const order = await OrderService.updateStatus(req.params.id as string, status);
             res.status(200).json({ status: 'success', data: { order } });
         } catch (error) {
             next(error);
@@ -44,7 +44,7 @@ export class OrderController {
 
     static async getById(req: AuthRequest, res: Response, next: NextFunction) {
         try {
-            const order = await OrderService.getOrderById(req.params.id);
+            const order = await OrderService.getOrderById(req.params.id as string);
             res.status(200).json({ status: 'success', data: { order } });
         } catch (error) {
             next(error);

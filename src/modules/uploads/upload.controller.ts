@@ -27,7 +27,7 @@ export class UploadController {
     static async getFile(req: Request, res: Response, next: NextFunction) {
         try {
             const { filename } = req.params;
-            const filePath = path.join(process.cwd(), 'uploads', filename);
+            const filePath = path.join(process.cwd(), 'uploads', filename as string);
 
             if (!fs.existsSync(filePath)) {
                 throw new AppError('File not found', 404);
@@ -42,7 +42,7 @@ export class UploadController {
     static async deleteFile(req: Request, res: Response, next: NextFunction) {
         try {
             const { filename } = req.params;
-            const filePath = path.join(process.cwd(), 'uploads', filename);
+            const filePath = path.join(process.cwd(), 'uploads', filename as string);
 
             if (!fs.existsSync(filePath)) {
                 throw new AppError('File not found', 404);

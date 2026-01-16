@@ -15,7 +15,7 @@ export class SubmissionController {
 
     static async getSubmissionsByOrder(req: Request, res: Response, next: NextFunction) {
         try {
-            const submissions = await SubmissionService.getSubmissionsByOrder(req.params.orderId);
+            const submissions = await SubmissionService.getSubmissionsByOrder(req.params.orderId as string);
             res.status(200).json({ status: 'success', data: { submissions } });
         } catch (error) {
             next(error);
@@ -24,7 +24,7 @@ export class SubmissionController {
 
     static async getSubmission(req: Request, res: Response, next: NextFunction) {
         try {
-            const submission = await SubmissionService.getSubmission(req.params.id);
+            const submission = await SubmissionService.getSubmission(req.params.id as string);
             res.status(200).json({ status: 'success', data: { submission } });
         } catch (error) {
             next(error);
