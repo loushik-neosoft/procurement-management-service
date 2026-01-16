@@ -122,6 +122,37 @@ If you prefer running without Docker (except for the DB):
     npm run dev
     ```
 
+
+### Kubernetes (Minikube)
+To run the service and database on a local Minikube cluster:
+
+1.  **Start Minikube**:
+    ```bash
+    minikube start
+    ```
+
+2.  **Build Docker Image**:
+    Build the image inside Minikube's Docker environment so it's accessible to the cluster:
+    ```bash
+    eval $(minikube docker-env)
+    docker build -t procurement-service:latest .
+    ```
+
+3.  **Apply Manifests**:
+    Deploy the database and service:
+    ```bash
+    kubectl apply -f deployments/db-deployment.yaml
+    kubectl apply -f deployments/db-service.yaml
+    kubectl apply -f deployments/procurement-deployment.yaml
+    kubectl apply -f deployments/procurement-service.yaml
+    ```
+
+4.  **Access the Service**:
+    Get the service URL:
+    ```bash
+    minikube service procurement-service --url
+    ```
+
 ## Environment Variables
 | Variable | Description | Default (Docker) |
 |----------|-------------|------------------|
@@ -165,6 +196,11 @@ procurement_management/
 │   ├── routes.ts           # Central Route Definition
 │   └── server.ts           # Entry Point
 ├── Dockerfile              # Docker build instructions
+├── deployments/            # Kubernetes manifests
+│   ├── db-deployment.yaml
+│   ├── db-service.yaml
+│   ├── procurement-deployment.yaml
+│   └── procurement-service.yaml
 ├── docker-compose.dev.yml  # Docker Compose service definition
 └── package.json            # Dependencies and scripts
 ```
